@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
 
-namespace harmony_self_patching.Patches.NetNodePatches {
+namespace PatchOldHarmony.Patches.NetNodePatches {
     using Utils;
 
     [HarmonyPatch()]

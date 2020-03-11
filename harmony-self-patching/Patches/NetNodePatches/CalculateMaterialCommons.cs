@@ -6,7 +6,7 @@ using System.Reflection;
 
  */
  
-namespace harmony_self_patching.Patches {
+namespace PatchOldHarmony.Patches {
     using System;
     using UnityEngine;
     using Utils;

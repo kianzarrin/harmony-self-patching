@@ -1,10 +1,10 @@
 using ICities;
 using JetBrains.Annotations;
-using harmony_self_patching.Utils;
-using harmony_self_patching.Patches;
+using PatchOldHarmony.Utils;
+using PatchOldHarmony.Patches;
 using System;
 
-namespace harmony_self_patching
+namespace PatchOldHarmony
 {
     public class HarmonySelfPatchingMod : IUserMod
     {

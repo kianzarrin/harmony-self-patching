@@ -1,6 +1,6 @@
 using HarmonyLib;
 
-namespace harmony_self_patching.Patches
+namespace PatchOldHarmony.Patches
 {
     public class HarmonyExtension
     {

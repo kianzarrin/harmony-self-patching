@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace harmony_self_patching.Patches {
+namespace PatchOldHarmony.Patches {
     using System.Reflection;
     using Utils;
     public static class TranspilerUtils {

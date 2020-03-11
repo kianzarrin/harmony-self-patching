@@ -1,7 +1,7 @@
 using ColossalFramework;
 using System.Reflection;
 
-namespace harmony_self_patching.Utils {
+namespace PatchOldHarmony.Utils {
 
     public static class Extensions {
         internal static void Assert(bool con, string m="") {

@@ -1,4 +1,4 @@
-namespace harmony_self_patching.Utils {
+namespace PatchOldHarmony.Utils {
     using System;
     using System.Diagnostics;
     using System.IO;
