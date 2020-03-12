@@ -51,8 +51,8 @@ namespace PatchOldHarmony.Patches
                     {
                         Log.Error("FAILED to Add prefix to: " + original);
                     }
-
                 }
+                harmony.PatchAll();
             }
         }
 
@@ -60,6 +60,7 @@ namespace PatchOldHarmony.Patches
         {
             if (harmony != null)
             {
+                harmony.UnpatchAll(HARMONY_ID);
                 foreach (var patchPair in patches_)
                     harmony.Unpatch(patchPair.Original, patchPair.Patch);
                 patches_ = null;
