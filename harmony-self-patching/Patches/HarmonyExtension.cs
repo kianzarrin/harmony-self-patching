@@ -1,7 +1,9 @@
-using HarmonyLib;
 
 namespace PatchOldHarmony.Patches
 {
+    using HarmonyLib;
+    using PatchOldHarmony.Utils;
+
     public class HarmonyExtension
     {
         Harmony harmony;
@@ -23,7 +25,9 @@ namespace PatchOldHarmony.Patches
                 Harmony.DEBUG = true;
 #endif
                 harmony = new Harmony(HARMONY_ID);
-                harmony.PatchAll(GetType().Assembly);
+                var prefix = typeof(CreatePatchedMethod_Patch).GetMethod("Prefix");
+                foreach (var original in CreatePatchedMethod_Patch.TargetMethods())
+                    harmony.Patch(original, new HarmonyMethod(prefix));
             }
         }
 

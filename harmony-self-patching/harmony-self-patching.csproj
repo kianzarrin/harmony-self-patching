@@ -77,7 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Patches\AssemblyUtils.cs" />
-    <Compile Include="Patches\OldHarmony\PatchOldHarmony.cs" />
+    <Compile Include="Patches\NetNodePatches\CreatePatchedMethod_Patch.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="HarmonySelfPatchingMod.cs" />
     <Compile Include="Utils\Log.cs" />
@@ -92,7 +92,7 @@
     <PostBuildEvent>set "DEPLOYDIR=$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(SolutionName)\"
 if not exist "%25DEPLOYDIR%25" mkdir "%25DEPLOYDIR%25"
 
-xcopy /y "$(TargetDir)0Central.Harmony.dll" "%25DEPLOYDIR%25"
+xcopy /y "$(TargetDir)00Central.Harmony.dll" "%25DEPLOYDIR%25"
 
 del "%25DEPLOYDIR%25$(TargetFileName)"
 xcopy /y "$(TargetPath)" "%25DEPLOYDIR%25"          

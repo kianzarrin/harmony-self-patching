@@ -9,7 +9,7 @@
  * 
  */
 
-namespace PatchOldHarmony.Patches.OldHarmony { 
+namespace PatchOldHarmony.Patches { 
     using HarmonyLib;
     using System;
     using System.Reflection;
@@ -17,7 +17,7 @@ namespace PatchOldHarmony.Patches.OldHarmony {
     using System.Collections.Generic;
     using Utils;
 
-    public static class CreatePatchedMethod_Patch
+    public class CreatePatchedMethod_Patch
     {
         // public static DynamicMethod MethodPatcher:CreatePatchedMethod(
         // MethodBase original, List<MethodInfo> prefixes, List<MethodInfo> postfixes, List<MethodInfo> transpilers)
@@ -25,9 +25,9 @@ namespace PatchOldHarmony.Patches.OldHarmony {
         public static List<MethodBase> TargetMethods()
         {
             var ret = new List<MethodBase>();
-            foreach( var assembly in AssemblyUtils.Harmony12Assemblies)
+            foreach ( var assembly in AssemblyUtils.Harmony12Assemblies)
             {
-                var targetMethod = assembly.GetType("MethodPatcher").GetMethod(
+                var targetMethod = assembly.GetType("Harmony.MethodPatcher")?.GetMethod(
                     "CreatePatchedMethod",
                     new Type[]
                     {
@@ -36,14 +36,16 @@ namespace PatchOldHarmony.Patches.OldHarmony {
                         typeof(List<MethodInfo>),
                         typeof(List<MethodInfo>)
                     });
-                ret.Add(targetMethod);
+                if(targetMethod!=null)
+                    ret.Add(targetMethod);
             }
+            Log._Debug("TargetMethods count = " + ret.Count);
             return ret;
         }
 
         //
         //internal MethodInfo MethodPatcher:CreateReplacement(out Dictionary<int, CodeInstruction> finalInstructions)
-        public static MethodInfo MethodPatcher_CreateReplacement =>
+        static MethodInfo MethodPatcher_CreateReplacement =>
             AssemblyUtils.ourAssembly.GetType("HarmonyLib.MethodPatcher").
             GetMethod("CreateReplacement",BindingFlags.NonPublic|BindingFlags.Instance) ??
             throw new Exception("could not find CreateReplacement");
@@ -53,7 +55,7 @@ namespace PatchOldHarmony.Patches.OldHarmony {
         // MethodBase original, MethodBase source, 
         // List<MethodInfo> prefixes, List<MethodInfo> postfixes, List<MethodInfo> transpilers, List<MethodInfo> finalizers, 
         // bool debug)
-        public static ConstructorInfo MethodPatcher_Ctor =>
+        static ConstructorInfo MethodPatcher_Ctor =>
             AssemblyUtils.ourAssembly.GetType("HarmonyLib.MethodPatcher").GetConstructor(
                 BindingFlags.NonPublic | BindingFlags.Instance,
                 null,
