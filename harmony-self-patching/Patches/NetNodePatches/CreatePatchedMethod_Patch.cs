@@ -19,9 +19,10 @@ namespace PatchOldHarmony.Patches {
 
     public class CreatePatchedMethod_Patch
     {
-        // public static DynamicMethod MethodPatcher:CreatePatchedMethod(
-        // MethodBase original, List<MethodInfo> prefixes, List<MethodInfo> postfixes, List<MethodInfo> transpilers)
-
+        //public static DynamicMethod MethodPatcher:CreatePatchedMethod(
+        // MethodBase original, 
+        // string harmonyInstanceID, 
+        // List<MethodInfo> prefixes, List<MethodInfo> postfixes, List<MethodInfo> transpilers)
         public static List<MethodBase> TargetMethods()
         {
             var ret = new List<MethodBase>();
@@ -32,6 +33,7 @@ namespace PatchOldHarmony.Patches {
                     new Type[]
                     {
                         typeof(MethodBase),
+                        typeof(string),
                         typeof(List<MethodInfo>),
                         typeof(List<MethodInfo>),
                         typeof(List<MethodInfo>)
@@ -43,10 +45,9 @@ namespace PatchOldHarmony.Patches {
             return ret;
         }
 
-        //
         //internal MethodInfo MethodPatcher:CreateReplacement(out Dictionary<int, CodeInstruction> finalInstructions)
         static MethodInfo MethodPatcher_CreateReplacement =>
-            AssemblyUtils.ourAssembly.GetType("HarmonyLib.MethodPatcher").
+            AssemblyUtils.HarmonyCentralAssembly.GetType("HarmonyLib.MethodPatcher").
             GetMethod("CreateReplacement",BindingFlags.NonPublic|BindingFlags.Instance) ??
             throw new Exception("could not find CreateReplacement");
 
@@ -56,7 +57,7 @@ namespace PatchOldHarmony.Patches {
         // List<MethodInfo> prefixes, List<MethodInfo> postfixes, List<MethodInfo> transpilers, List<MethodInfo> finalizers, 
         // bool debug)
         static ConstructorInfo MethodPatcher_Ctor =>
-            AssemblyUtils.ourAssembly.GetType("HarmonyLib.MethodPatcher").GetConstructor(
+            AssemblyUtils.HarmonyCentralAssembly.GetType("HarmonyLib.MethodPatcher").GetConstructor(
                 BindingFlags.NonPublic | BindingFlags.Instance,
                 null,
                 new Type[]
@@ -71,27 +72,45 @@ namespace PatchOldHarmony.Patches {
                 },
                 null) ?? throw new Exception("could not find MethodPatcher.Ctor");
 
-        public static void Prefix(
-            //ref DynamicMethod __result,
+        public static void Test()
+        {
+            var b = MethodPatcher_CreateReplacement;
+            var a = MethodPatcher_Ctor;
+            Log._Debug("static load test: found " + a + " and " + b);
+        }
+
+        public static bool Prefix(
+            ref DynamicMethod __result,
             MethodBase original, 
             List<MethodInfo> prefixes, List<MethodInfo> postfixes, List<MethodInfo> transpilers) {
+            try
+            {
+                Log.Info("KIAN DEBUG> CreatePatchedMethod_Patch.Prefix() called");
 
-            //var patcher = new MethodPatcher(original, null, sortedPrefixes, sortedPostfixes, sortedTranspilers, sortedFinalizers, debug);
-            //var replacement = patcher.CreateReplacement(out var finalInstructions);
-            //if (replacement == null) throw new MissingMethodException($"Cannot create replacement for {original.FullDescription()}");
+                //var patcher = new MethodPatcher(original, null, sortedPrefixes, sortedPostfixes, sortedTranspilers, sortedFinalizers, debug);
+                //var replacement = patcher.CreateReplacement(out var finalInstructions);
+                //if (replacement == null) throw new MissingMethodException($"Cannot create replacement for {original.FullDescription()}");
 
-            object patcher = MethodPatcher_Ctor.Invoke(
-                new object[] { original, null, prefixes, postfixes, transpilers, null, Harmony.DEBUG });
+                List<MethodInfo> sources = null;
+                List<MethodInfo> finalizers = new List<MethodInfo>();
+                object patcher = MethodPatcher_Ctor.Invoke(
+                    new object[] { original, sources, prefixes, postfixes, transpilers, finalizers, Harmony.DEBUG });
+                Log.Info("KIAN DEBUG> patcher = new MethodPatcher() returned " + patcher);
 
-            object[] arguments = new object[] { null };
-            MethodInfo replacement = MethodPatcher_CreateReplacement.
-                Invoke(patcher, arguments) as MethodInfo
-                ?? throw new MissingMethodException($"Cannot create replacement for {original.FullDescription()}");
-
-            Log.Info("KIAN DEBUG> replacement type is :" + replacement.GetType());
-
-            //__result = ref (replacement as DynamicILInfo);
-            //return false;
+                object[] arguments = new object[] { null };
+                MethodInfo replacement = MethodPatcher_CreateReplacement.
+                    Invoke(patcher, arguments) as MethodInfo
+                    ?? throw new MissingMethodException($"Cannot create replacement for {original.FullDescription()}");
+                Log.Info("KIAN DEBUG> replacement = patcher.CreateReplacement() returned " + replacement);
+  
+                __result = replacement as DynamicMethod;
+                return false;
+            }
+            catch(Exception e)
+            {
+                Log.Error(e.ToString());
+                return true;
+            }
         }
 
     } // end class

@@ -3,11 +3,20 @@ namespace PatchOldHarmony.Patches
 {
     using HarmonyLib;
     using PatchOldHarmony.Utils;
+    using System.Collections.Generic;
+    using System.Reflection;
+
 
     public class HarmonyExtension
     {
         Harmony harmony;
         public const string HARMONY_ID = "CS.Kian.harmony_self_patching";
+        struct PatchPair
+        {
+            public MethodBase Original;
+            public MethodInfo Patch;
+        }
+        private List<PatchPair> patches_;
 
         public void InstallHarmony()
         {
@@ -23,11 +32,27 @@ namespace PatchOldHarmony.Patches
                 Log.Info("harmony_self_patching Patching...");
 #if DEBUG
                 Harmony.DEBUG = true;
+                CreatePatchedMethod_Patch.Test();
 #endif
                 harmony = new Harmony(HARMONY_ID);
+
                 var prefix = typeof(CreatePatchedMethod_Patch).GetMethod("Prefix");
+                patches_ = new List<PatchPair>();
                 foreach (var original in CreatePatchedMethod_Patch.TargetMethods())
-                    harmony.Patch(original, new HarmonyMethod(prefix));
+                {
+                    var patch = harmony.Patch(original, new HarmonyMethod(prefix));
+                    
+                    if (patch != null)
+                    {
+                        Log._Debug("Added prefix to: " + original);
+                        patches_.Add(new PatchPair { Original = original, Patch = patch });
+                    }
+                    else
+                    {
+                        Log.Error("FAILED to Add prefix to: " + original);
+                    }
+
+                }
             }
         }
 
@@ -35,7 +60,9 @@ namespace PatchOldHarmony.Patches
         {
             if (harmony != null)
             {
-                harmony.UnpatchAll(HARMONY_ID);
+                foreach (var patchPair in patches_)
+                    harmony.Unpatch(patchPair.Original, patchPair.Patch);
+                patches_ = null;
                 harmony = null;
                 Log.Info("harmony_self_patching patches Reverted.");
             }

@@ -4,16 +4,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 
 namespace PatchOldHarmony.Patches
 {
 	internal static class AssemblyUtils
 	{
-		internal static Assembly ourAssembly => new StackTrace(true).GetFrame(1).GetMethod().DeclaringType.Assembly;
+		internal static Assembly OurAssembly => new StackTrace(true).GetFrame(1).GetMethod().DeclaringType.Assembly;
+
+		internal static Assembly HarmonyCentralAssembly => typeof(HarmonyLib.Harmony).Assembly;
 
 		internal static List<Assembly> Harmony12Assemblies =>
 			AppDomain.CurrentDomain.GetAssemblies()
-			.Where(assembly => IsHarmony12Assembly(assembly) && assembly != ourAssembly)
+			.Where(assembly => IsHarmony12Assembly(assembly) && assembly != OurAssembly)
 			.ToList();
 
 		static bool IsHarmony12Assembly(Assembly assembly)
