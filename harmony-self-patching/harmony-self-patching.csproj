@@ -77,13 +77,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Patches\AssemblyUtils.cs" />
-    <Compile Include="Patches\NetNodePatches\CreatePatchedMethod_Patch.cs" />
+    <Compile Include="Patches\CreatePatchedMethod_Patch.cs" />
+    <Compile Include="Patches\ReleaseCitizenPatch.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="HarmonySelfPatchingMod.cs" />
     <Compile Include="Utils\Log.cs" />
-    <Compile Include="Patches\NetNodePatches\CalculateMaterialCommons.cs" />
     <Compile Include="Patches\HarmonyExtension.cs" />
-    <Compile Include="Patches\NetNodePatches\RenderInstance.cs" />
     <Compile Include="Patches\TranspilerUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
